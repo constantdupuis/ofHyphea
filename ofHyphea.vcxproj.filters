@@ -79,9 +79,6 @@
     <ClCompile Include="..\..\libs\of_v0.11.0_vs2017_release\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.cpp">
       <Filter>addons\ofxOsc\libs\oscpack\src\osc</Filter>
     </ClCompile>
-    <ClCompile Include="src\QuadTree.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\test.cpp">
       <Filter>src</Filter>
     </ClCompile>

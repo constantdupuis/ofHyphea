@@ -1,29 +1,21 @@
 #include "ofApp.h"
 #include "Point.h"
 #include "QuadTree.h"
-#include "test.h"
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	test<int> t;
 
-	t.toto();
+	qtree = make_unique<QuadTree<Point>>(
+		make_unique<ofRectangle>(10, 10, ofGetWidth(), ofGetHeight()),
+		4);
 
-	qtree = make_unique<QuadTree<Point>>(make_unique<ofRectangle>(10, 10, ofGetWidth(), ofGetHeight()), 8);
-	/*shared_ptr<Point> np = make_shared<Point>(ofRandomWidth(), ofRandomHeight());
-	qtree->insert(np);*/
-
-	/*np = make_shared<Point>(ofRandomWidth(), ofRandomHeight());
-	qtree->insert(np);
-
-	np = make_shared<Point>(ofRandomWidth(), ofRandomHeight());
-	qtree->insert(np);
-
-	np = make_shared<Point>(ofRandomWidth(), ofRandomHeight());
-	qtree->insert(np);
-
-	np = make_shared<Point>(ofRandomWidth(), ofRandomHeight());
-	qtree->insert(np);*/
+	shared_ptr<Point> np;
+	for (int i = 0; i < 8; i++)
+	{
+		np = make_shared<Point>(ofRandomWidth(), ofRandomHeight());
+		qtree->insert(np);
+	}
 
 	/*qtree->forEach([](const QuadTree<Point>&) {
 		cout << "Quatree\n";

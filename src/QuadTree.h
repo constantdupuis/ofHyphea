@@ -12,18 +12,20 @@ public:
 	{
 		_boundary = std::move(boundary);
 		_capacity = capacity;
+		_subdivided = false;
 	}
 
 	bool insert(shared_ptr<T> point);
+	bool isSubdivided() { return _subdivided; }
 
 	//shared_ptr<std::vector<shared_ptr<T>>> query();
 
-	void forEach( std::function<void(const QuadTree<T>&)> cb);
+	void forEach( std::function<void(QuadTree<T>&)> cb);
 	void forEachBoundary( std::function<void(const ofRectangle&)> cb);
 	void forEachPoint( std::function<void(const T&)> cb);
 
 	ofRectangle const& boundary();
-	shared_ptr<std::vector<shared_ptr<T>>> const& points();
+	shared_ptr<std::vector<shared_ptr<T>>> const points();
 
 private:
 	shared_ptr<std::vector<shared_ptr<T>>> _points = std::make_shared<std::vector<shared_ptr<T>>>();
@@ -41,7 +43,7 @@ private:
 	*/
 	void subdivide();
 
-	void innerForEach( QuadTree<T>* currentQtree, std::function<void(const QuadTree<T>&)> cb);
+	void innerForEach( QuadTree<T>* currentQtree, std::function<void(QuadTree<T>&)> callback);
 	
 };
 
@@ -51,19 +53,19 @@ bool QuadTree<T>::insert(shared_ptr<T> point)
 	// check template param type
 	static_assert(std::is_base_of<Point, T>::value, "T should be derived from Point");
 
-	cout << "insert " << point << "\n";
+	//cout << "\ninsert (" << point->_pos.x << "x" << point->_pos.y << ")\n";
 	// if point is not in our boundary just leave
 	if (!_boundary->inside(point->_pos)) {
-		cout << "insert, point is not in our boundary, return\n";
+		//cout << " point is not in our boundary, return\n";
 		return false;
 	}
 	
-	cout << "insert, point is in our boundary, continue\n";
+	//cout << " point is in our boundary, continue\n";
 
 	// if over capacity wreate sub QuadTree
-	if (_points->size() > _capacity)
+	if (_points->size() == _capacity)
 	{	
-		cout << "insert, our capacity is exceded, delegate to sub quadtree\n";
+		//cout << " our capacity is exceded, delegate to sub quadtree\n";
 		// subdivide if needed
 		subdivide();
 
@@ -89,7 +91,7 @@ bool QuadTree<T>::insert(shared_ptr<T> point)
 			throw std::runtime_error("Should never get here!");
 		}
 	}
-	cout << "insert, capacity is ok, add point to our vector\n";
+	//cout << " capacity is ok, add point to our vector \n";
 	// add point to this QuadTree
 	_points->push_back(point);
 
@@ -97,18 +99,31 @@ bool QuadTree<T>::insert(shared_ptr<T> point)
 }
 
 template<class T>
-void QuadTree<T>::forEach(std::function<void(const QuadTree<T>&)> cb)
+void QuadTree<T>::forEach(std::function<void(QuadTree<T>&)> callback)
 {
-	innerForEach(this, cb);
+	innerForEach(this, callback);
 }
 
 template<class T>
-void QuadTree<T>::forEachBoundary(std::function<void(const ofRectangle&)> cb)
+void QuadTree<T>::innerForEach(QuadTree<T>* currentQtree, std::function<void(QuadTree<T>&)> callback)
+{
+	callback(*(currentQtree));
+
+	if (!currentQtree->isSubdivided()) return;
+
+	innerForEach(currentQtree->_topLeft.get(), callback);
+	innerForEach(currentQtree->_topRight.get(), callback);
+	innerForEach(currentQtree->_bottomLeft.get(), callback);
+	innerForEach(currentQtree->_bottomRight.get(), callback);
+}
+
+template<class T>
+void QuadTree<T>::forEachBoundary(std::function<void(const ofRectangle&)> callback)
 {
 }
 
 template<class T>
-void QuadTree<T>::forEachPoint(std::function<void(const T&)> cb)
+void QuadTree<T>::forEachPoint(std::function<void(const T&)> callback)
 {
 }
 
@@ -119,7 +134,7 @@ ofRectangle const& QuadTree<T>::boundary()
 }
 
 template<class T>
-shared_ptr<std::vector<shared_ptr<T>>> const& QuadTree<T>::points()
+shared_ptr<std::vector<shared_ptr<T>>> const QuadTree<T>::points()
 {
 	return _points;
 }
@@ -127,8 +142,10 @@ shared_ptr<std::vector<shared_ptr<T>>> const& QuadTree<T>::points()
 template<class T>
 void QuadTree<T>::subdivide()
 {
+	//cout << "subdivide\n";
 	if (!_subdivided)
 	{
+		//cout << " not yet subdivided, do it\n";
 		_subdivided = true;
 
 		float x = _boundary->x;
@@ -141,17 +158,4 @@ void QuadTree<T>::subdivide()
 		_bottomLeft = std::make_unique<QuadTree<T>>(make_unique<ofRectangle>(x, y + nh, nw, nh), _capacity);
 		_bottomRight = std::make_unique<QuadTree<T>>(make_unique<ofRectangle>(x + nw, y + nh, nw, nh), _capacity);
 	}
-}
-
-template<class T>
-void QuadTree<T>::innerForEach(QuadTree<T>* currentQtree, std::function<void(const QuadTree<T>&)> cb)
-{
-	cb(*(this));
-
-	if (!_subdivided) return;
-
-	innerForEach(_topLeft.get(), cb);
-	innerForEach(_topRight.get(), cb);
-	innerForEach(_bottomLeft.get(), cb);
-	innerForEach(_bottomRight.get(), cb);
 }

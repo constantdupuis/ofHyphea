@@ -7,29 +7,49 @@
 void ofApp::setup(){
 
 	qtree = make_unique<QuadTree<Point>>(
-		make_unique<ofRectangle>(10, 10, ofGetWidth(), ofGetHeight()),
+		make_unique<ofRectangle>(10, 10, ofGetWidth()-20, ofGetHeight()-20),
 		4);
 
 	shared_ptr<Point> np;
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 20; i++)
 	{
-		np = make_shared<Point>(ofRandomWidth(), ofRandomHeight());
+		np = make_shared<Point>(10+ofRandom(ofGetWidth() - 20), 10+ofRandom(ofGetHeight()-20));
 		qtree->insert(np);
 	}
 
-	/*qtree->forEach([](const QuadTree<Point>&) {
+	qtree->forEach([](QuadTree<Point>& qtree) {
 		cout << "Quatree\n";
-	});*/
+		cout << " contains " << qtree.points()->size() << " points\n";
+		for (auto p : *(qtree.points()))
+		{
+			cout << " point ("<< p->_pos.x << "x" << p->_pos.y << ")\n";
+		}
+	});
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	ofBackground(55);
 
+	qtree->forEach([](QuadTree<Point>& qtree) {
+		auto r = qtree.boundary();
+
+		ofSetColor(ofColor::greenYellow);
+		ofNoFill();
+		ofDrawRectangle(qtree.boundary());
+
+		for (auto p : *(qtree.points()))
+		{
+			ofFill();
+			ofSetColor(ofColor::pink);
+			ofDrawCircle(p->_pos, 5.0);
+		}
+	});
 }
 
 //--------------------------------------------------------------

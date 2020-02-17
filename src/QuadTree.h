@@ -15,28 +15,30 @@ public:
 		_subdivided = false;
 	}
 
-	bool insert(shared_ptr<T> point);
-	bool isSubdivided() { return _subdivided; }
+	void setup(ofRectangle& boundary, int capacity);
 
-	//shared_ptr<std::vector<shared_ptr<T>>> query();
+	//bool insert(shared_ptr<T> point);
+	//bool isSubdivided() { return _subdivided; }
 
-	void forEach( std::function<void(QuadTree<T>&)> cb);
-	void forEachBoundary( std::function<void(const ofRectangle&)> cb);
-	void forEachPoint( std::function<void(const T&)> cb);
+	////shared_ptr<std::vector<shared_ptr<T>>> query();
 
-	ofRectangle const& boundary();
-	shared_ptr<std::vector<shared_ptr<T>>> const points();
+	//void forEach( std::function<void(QuadTree<T>&)> cb);
+	//void forEachBoundary( std::function<void(const ofRectangle&)> cb);
+	//void forEachPoint( std::function<void(const T&)> cb);
+
+	//ofRectangle const& boundary();
+	//shared_ptr<std::vector<shared_ptr<T>>> const points();
 
 private:
-	shared_ptr<std::vector<shared_ptr<T>>> _points = std::make_shared<std::vector<shared_ptr<T>>>();
-	std::unique_ptr<ofRectangle> _boundary;
+	std::vector<T&> _points;
+	ofRectangle _boundary;
 	int _capacity = 4;
 	bool _subdivided = false;
 
-	std::unique_ptr<QuadTree<T>> _topLeft;
-	std::unique_ptr<QuadTree<T>> _topRight;
-	std::unique_ptr<QuadTree<T>> _bottomLeft;
-	std::unique_ptr<QuadTree<T>> _bottomRight;
+	QuadTree<T> _topLeft;
+	QuadTree<T> _topRight;
+	QuadTree<T> _bottomLeft;
+	QuadTree<T> _bottomRight;
 
 	/**
 	* Subdivide this QuadTree in four sub QuadTree if not already done.
@@ -46,6 +48,13 @@ private:
 	void innerForEach( QuadTree<T>* currentQtree, std::function<void(QuadTree<T>&)> callback);
 	
 };
+
+template<class T>
+inline void QuadTree<T>::setup(ofRectangle& boundary, int capacity)
+{
+	_boundary = boundary;
+	_capacity = capacity;
+}
 
 template<class T>
 bool QuadTree<T>::insert(shared_ptr<T> point)

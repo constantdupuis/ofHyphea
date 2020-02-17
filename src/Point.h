@@ -9,5 +9,14 @@ public:
 		_pos.x = x;
 		_pos.y = y;
 	}
+
+	static shared_ptr<Point> create(float x, float y)
+	{
+		return std::make_shared<Point>(x, y);
+	}
+
+	glm::vec2& const pos() { return _pos; }
+
+private:
 	glm::vec2 _pos;
 };

@@ -8,34 +8,31 @@ void ofApp::setup(){
 
 	qtree = make_unique<QuadTree<Point>>(
 		make_unique<ofRectangle>(10, 10, ofGetWidth()-20, ofGetHeight()-20),
-		4);
-
-	shared_ptr<Point> np;
-	for (int i = 0; i < 20; i++)
-	{
-		np = make_shared<Point>(10+ofRandom(ofGetWidth() - 20), 10+ofRandom(ofGetHeight()-20));
-		qtree->insert(np);
-	}
-
-	qtree->forEach([](QuadTree<Point>& qtree) {
-		cout << "Quatree\n";
-		cout << " contains " << qtree.points()->size() << " points\n";
-		for (auto p : *(qtree.points()))
-		{
-			cout << " point ("<< p->_pos.x << "x" << p->_pos.y << ")\n";
-		}
-	});
+		16);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	
+	// add point when left button mouse is pressed
+	if (ofGetMousePressed(0)) // left button
+	{
+		auto bound = ofRectangle(10, 10, ofGetWidth() - 20, ofGetHeight() - 20);
+		if (bound.inside(ofGetMouseX(), ofGetMouseY()))
+		{
+			shared_ptr<Point> np = make_shared<Point>(ofGetMouseX(), ofGetMouseY());
+			qtree->insert(np);
+		}
+	}
+	else if (ofGetMousePressed(2))
+	{
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 	ofBackground(55);
 
+	//draw boundary and points
 	qtree->forEach([](QuadTree<Point>& qtree) {
 		auto r = qtree.boundary();
 
@@ -74,12 +71,12 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------

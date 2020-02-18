@@ -23,7 +23,7 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		unique_ptr<QuadTree<Point>> qtree;
+		shared_ptr<QuadTree<Point>> qtree;
 		ofRectangle queryArea;
 		shared_ptr<std::vector<shared_ptr<Point>>> foundPoints;
 		

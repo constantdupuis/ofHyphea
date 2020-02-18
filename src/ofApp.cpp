@@ -6,7 +6,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-	qtree = make_unique<QuadTree<Point>>(
+	qtree = make_shared<QuadTree<Point>>(
 		ofRectangle(10, 10, ofGetWidth()-20, ofGetHeight()-20),
 		8);
 

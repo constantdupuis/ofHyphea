@@ -233,6 +233,12 @@
     <ClInclude Include="src\test.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="Bud.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Branch.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

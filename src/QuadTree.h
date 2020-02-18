@@ -8,9 +8,14 @@ template<class T>
 class QuadTree {
 
 public:
-	QuadTree(std::unique_ptr<ofRectangle> boundary, int capacity)
+	QuadTree()
 	{
-		_boundary = std::move(boundary);
+
+	}
+
+	QuadTree( ofRectangle boundary, int capacity)
+	{
+		_boundary = boundary;
 		_capacity = capacity;
 		_subdivided = false;
 	}
@@ -27,7 +32,7 @@ public:
 
 private:
 	shared_ptr<std::vector<shared_ptr<T>>> _points = std::make_shared<std::vector<shared_ptr<T>>>();
-	std::unique_ptr<ofRectangle> _boundary;
+	ofRectangle _boundary;
 	int _capacity = 4;
 	bool _subdivided = false;
 
@@ -52,7 +57,7 @@ bool QuadTree<T>::insert(shared_ptr<T> point)
 
 	//cout << "\ninsert (" << point->_pos.x << "x" << point->_pos.y << ")\n";
 	// if point is not in our boundary just leave
-	if (!_boundary->inside(point->_pos)) {
+	if (!_boundary.inside(point->pos())) {
 		//cout << " point is not in our boundary, return\n";
 		return false;
 	}
@@ -128,12 +133,12 @@ template<class T>
 inline void QuadTree<T>::innerQuery(ofRectangle area, shared_ptr<std::vector<shared_ptr<T>>> found)
 {
 	// if query area don't intersect this doundary, just return
-	if (!_boundary->intersects(area)) return;
+	if (!_boundary.intersects(area)) return;
 
 	// collect all points inside the query area
 	for (auto p : *(_points))
 	{
-		if (area.inside(p->_pos))
+		if (area.inside(p->pos()))
 		{
 			found->push_back(p);
 		}
@@ -152,7 +157,7 @@ inline void QuadTree<T>::innerQuery(ofRectangle area, shared_ptr<std::vector<sha
 template<class T>
 ofRectangle const& QuadTree<T>::boundary()
 {
-	return *_boundary;
+	return _boundary;
 }
 
 template<class T>
@@ -170,14 +175,14 @@ void QuadTree<T>::subdivide()
 		//cout << " not yet subdivided, do it\n";
 		_subdivided = true;
 
-		float x = _boundary->x;
-		float y = _boundary->y;
-		float nw = _boundary->width / 2.0;
-		float nh = _boundary->height / 2.0;
+		float x = _boundary.x;
+		float y = _boundary.y;
+		float nw = _boundary.width / 2.0;
+		float nh = _boundary.height / 2.0;
 
-		_topLeft = std::make_unique<QuadTree<T>>(make_unique<ofRectangle>(x, y, nw, nh), _capacity);
-		_topRight = std::make_unique<QuadTree<T>>(make_unique<ofRectangle>(x + nw, y, nw, nh), _capacity);
-		_bottomLeft = std::make_unique<QuadTree<T>>(make_unique<ofRectangle>(x, y + nh, nw, nh), _capacity);
-		_bottomRight = std::make_unique<QuadTree<T>>(make_unique<ofRectangle>(x + nw, y + nh, nw, nh), _capacity);
+		_topLeft = std::make_unique<QuadTree<T>>(ofRectangle(x, y, nw, nh), _capacity);
+		_topRight = std::make_unique<QuadTree<T>>(ofRectangle(x + nw, y, nw, nh), _capacity);
+		_bottomLeft = std::make_unique<QuadTree<T>>(ofRectangle(x, y + nh, nw, nh), _capacity);
+		_bottomRight = std::make_unique<QuadTree<T>>(ofRectangle(x + nw, y + nh, nw, nh), _capacity);
 	}
 }

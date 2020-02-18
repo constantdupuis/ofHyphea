@@ -7,7 +7,7 @@
 void ofApp::setup(){
 
 	qtree = make_unique<QuadTree<Point>>(
-		make_unique<ofRectangle>(10, 10, ofGetWidth()-20, ofGetHeight()-20),
+		ofRectangle(10, 10, ofGetWidth()-20, ofGetHeight()-20),
 		8);
 
 	shared_ptr<Point> np;
@@ -56,7 +56,7 @@ void ofApp::draw(){
 		{
 			ofFill();
 			ofSetColor(ofColor::pink);
-			ofDrawCircle(p->_pos, 5.0);
+			ofDrawCircle(p->pos(), 5.0);
 		}
 	});
 
@@ -68,7 +68,7 @@ void ofApp::draw(){
 	{
 		ofFill();
 		ofSetColor(ofColor::yellow);
-		ofDrawCircle(p->_pos, 5.0);
+		ofDrawCircle(p->pos(), 5.0);
 	}
 }
 

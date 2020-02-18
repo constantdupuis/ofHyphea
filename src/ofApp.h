@@ -24,5 +24,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		unique_ptr<QuadTree<Point>> qtree;
+		ofRectangle queryArea;
+		shared_ptr<std::vector<shared_ptr<Point>>> foundPoints;
 		
 };

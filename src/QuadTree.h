@@ -39,6 +39,8 @@ private:
 	void subdivide();
 
 	void innerForEach( QuadTree<T>* currentQtree, std::function<void(QuadTree<T>&)> callback);
+
+	void innerQuery(ofRectangle area, shared_ptr<std::vector<shared_ptr<T>>> found);
 	
 };
 
@@ -96,7 +98,11 @@ bool QuadTree<T>::insert(shared_ptr<T> point)
 template<class T>
 inline shared_ptr<std::vector<shared_ptr<T>>> QuadTree<T>::query(ofRectangle area)
 {
-	return shared_ptr<std::vector<shared_ptr<T>>>();
+	auto ret = make_shared<std::vector<shared_ptr<T>>>();
+	
+	innerQuery(area, ret);
+
+	return ret;
 }
 
 template<class T>
@@ -116,6 +122,30 @@ void QuadTree<T>::innerForEach(QuadTree<T>* currentQtree, std::function<void(Qua
 	innerForEach(currentQtree->_topRight.get(), callback);
 	innerForEach(currentQtree->_bottomLeft.get(), callback);
 	innerForEach(currentQtree->_bottomRight.get(), callback);
+}
+
+template<class T>
+inline void QuadTree<T>::innerQuery(ofRectangle area, shared_ptr<std::vector<shared_ptr<T>>> found)
+{
+	// if query area don't intersect this doundary, just return
+	if (!_boundary->intersects(area)) return;
+
+	// collect all points inside the query area
+	for (auto p : *(_points))
+	{
+		if (area.inside(p->_pos))
+		{
+			found->push_back(p);
+		}
+	}
+
+	if (_subdivided)
+	{
+		_topLeft->innerQuery( area, found);
+		_topRight->innerQuery(area, found);
+		_bottomLeft->innerQuery(area, found);
+		_bottomRight->innerQuery(area, found);
+	}
 }
 
 

@@ -8,7 +8,16 @@ void ofApp::setup(){
 
 	qtree = make_unique<QuadTree<Point>>(
 		make_unique<ofRectangle>(10, 10, ofGetWidth()-20, ofGetHeight()-20),
-		16);
+		8);
+
+	shared_ptr<Point> np;
+	for (int i = 0; i < 2000; i++)
+	{
+		np = make_shared<Point>(10 + ofRandom(ofGetWidth() - 20), 10 + ofRandom(ofGetHeight() - 20));
+		qtree->insert(np);
+	}
+	queryArea = ofRectangle(100, 156, 234, 182);
+	foundPoints = qtree->query(queryArea);
 }
 
 //--------------------------------------------------------------
@@ -16,15 +25,16 @@ void ofApp::update(){
 	// add point when left button mouse is pressed
 	if (ofGetMousePressed(0)) // left button
 	{
-		auto bound = ofRectangle(10, 10, ofGetWidth() - 20, ofGetHeight() - 20);
+	/*	auto bound = ofRectangle(10, 10, ofGetWidth() - 20, ofGetHeight() - 20);
 		if (bound.inside(ofGetMouseX(), ofGetMouseY()))
 		{
 			shared_ptr<Point> np = make_shared<Point>(ofGetMouseX(), ofGetMouseY());
 			qtree->insert(np);
-		}
+		}*/
 	}
 	else if (ofGetMousePressed(2))
 	{
+
 	}
 }
 
@@ -47,6 +57,17 @@ void ofApp::draw(){
 			ofDrawCircle(p->_pos, 5.0);
 		}
 	});
+
+	ofSetColor(ofColor::white);
+	ofNoFill();
+	ofDrawRectangle(queryArea);
+
+	for (auto p : *(foundPoints))
+	{
+		ofFill();
+		ofSetColor(ofColor::yellow);
+		ofDrawCircle(p->_pos, 5.0);
+	}
 }
 
 //--------------------------------------------------------------

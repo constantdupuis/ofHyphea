@@ -34,7 +34,9 @@ void ofApp::update(){
 	}
 	else if (ofGetMousePressed(2))
 	{
-
+		queryArea.x = ofGetMouseX();
+		queryArea.y = ofGetMouseY();
+		foundPoints = qtree->query(queryArea);
 	}
 }
 
